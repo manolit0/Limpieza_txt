@@ -1,0 +1,45 @@
+# Ruta del archivo
+archivo_ruta = 'Archivo.txt'
+
+while True:
+    with open(archivo_ruta, 'r') as archivo:
+        # Lee el contenido del archivo línea por línea
+        lineas = archivo.readlines()
+
+    lineas_modificadas = []  # Usaremos esta lista para almacenar las líneas modificadas
+
+    # Procesa cada línea para mover el contenido al final de la línea anterior si no cumple con las condiciones
+    i = 0
+    while i < len(lineas):
+        linea = lineas[i]
+
+        if i == 0:
+            # Mantener la primera línea (encabezados)
+            lineas_modificadas.append(linea)
+            i += 1
+            continue
+
+        if (
+            len(linea) >= 10 and
+            len(linea) >= 3 and  # Añade esta condición para asegurarte de que la línea tenga al menos 3 caracteres
+            linea[2] == "/" and
+            (linea[5:8] == "/22" or linea[5:8] == "/23") and
+            linea[9].isdigit()  # Añade esta condición para verificar que el décimo carácter sea un número
+        ):
+            lineas_modificadas.append(linea)  # Agrega la línea sin cambios a la lista
+            i += 1
+        else:
+            # Mueve el contenido de la línea problemática al final de la línea anterior
+            lineas_modificadas[-1] = lineas_modificadas[-1].rstrip('\n') + linea
+            i += 1
+
+    # Abre el archivo en modo escritura para sobrescribirlo con las líneas modificadas
+    with open(archivo_ruta, 'w') as archivo:
+        # Escribe las líneas modificadas de nuevo en el archivo
+        archivo.writelines(lineas_modificadas)
+
+    if len(lineas_modificadas) == len(lineas):
+        # Si no hubo cambios en ninguna línea (excepto los encabezados), salimos del bucle
+        break
+
+print("Contenido de líneas que no cumplen con las condiciones movido al final de la línea anterior, manteniendo los encabezados.")
